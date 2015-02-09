@@ -221,4 +221,29 @@ class Helper extends \OC\Share\Constants {
 
 		return $expires;
 	}
+
+	/**
+	 * add post request to message queue
+	 *
+	 * @param string $url
+	 * @param array $data
+	 * @param string $uid
+	 * @param string $protocol
+	 * @return boolean
+	 */
+	public static function addToMessageQueue($url, array $data, $uid, $protocol = '') {
+		/* @var $connection \OC\DB\Connection */
+		$connection = \OC::$server->getDatabaseConnection();
+		$query = $connection->createQueryBuilder();
+		$query->insert('`*PREFIX*share_mq`')
+			->values(array(
+			'`url`' => $query->expr()->literal($url),
+				'`data`' => $query->expr()->literal(json_encode($data)),
+				'`protocol`' => $query->expr()->literal($protocol),
+				'`uid`' => $query->expr()->literal($uid)));
+
+		$result = $query->execute();
+		return $result === 1 ? true : false;
+	}
+
 }

@@ -49,4 +49,18 @@ class Test_Share_Helper extends \Test\TestCase {
 		$result = \OC\Share\Helper::calculateExpireDate($defaultExpireSettings, $creationTime, $userExpireDate);
 		$this->assertSame($expected, $result);
 	}
+
+	public function testAddToMessageQueue() {
+		$this->assertTrue(
+			\OC\Share\Helper::addToMessageQueue('www.owncloud.org', array('foo' => 'bar'), 'user')
+		);
+
+		//cleanup
+		/* @var $connection \OC\DB\Connection */
+		$connection = \OC::$server->getDatabaseConnection();
+		$q = $connection->createQueryBuilder();
+		$q->delete('`*PREFIX*share_mq`');
+		$q->execute();
+	}
+
 }

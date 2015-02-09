@@ -179,13 +179,27 @@ class Manager {
 	 */
 	private function sendFeedbackToRemote($remote, $token, $id, $feedback) {
 
-		$url = $remote . \OCP\Share::BASE_PATH_TO_SHARE_API . '/' . $id . '/' . $feedback . '?format=' . \OCP\Share::RESPONSE_FORMAT;
+		$url = rtrim($remote, '/') . \OCP\Share::BASE_PATH_TO_SHARE_API . '/' . $id . '/' . $feedback . '?format=' . \OCP\Share::RESPONSE_FORMAT;
 		$fields = array('token' => $token);
 
 		$result = $this->httpHelper->post($url, $fields);
 		$status = json_decode($result['result'], true);
 
-		return ($result['success'] && $status['ocs']['meta']['statuscode'] === 100);
+		if ($result['success']) {
+			if ($status['ocs']['meta']['statuscode'] === 100) {
+				return true;
+			}
+		} else {
+			if (strpos($url, 'https://') === 0) {
+				$protocol = 'https://';
+			} else {
+				$protocol = 'http://';
+			}
+			$url = substr($url, strlen($protocol));
+			\OC\Share\Helper::addToMessageQueue($url, $fields, $this->uid, $protocol);
+		}
+
+		return false;
 	}
 
 	/**

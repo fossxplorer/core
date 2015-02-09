@@ -2335,6 +2335,20 @@ class Share extends \OC\Share\Constants {
 		$result = self::tryHttpPost($url, $fields);
 		$status = json_decode($result['result'], true);
 
+		if ($result['success'] === false) {
+			$user = \OC::$server->getUserSession()->getUser();
+			if ($user) {
+				$uid = $user->getUID();
+				Helper::addToMessageQueue($url, $fields, $uid);
+			} else {
+				\OCP\Util::writeLog(
+					'OCP\Share'
+					, 'Could not add request to message queue, could not determine uid'
+					, \OCP\Util::ERROR
+				);
+			}
+		}
+
 		return ($result['success'] && $status['ocs']['meta']['statuscode'] === 100);
 	}
 
