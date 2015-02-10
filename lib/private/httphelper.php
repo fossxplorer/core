@@ -215,6 +215,7 @@ class HTTPHelper {
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_POST, count($fields));
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $fieldsString);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 		if (is_readable($certBundle)) {
 			curl_setopt($ch, CURLOPT_CAINFO, $certBundle);
 		}
