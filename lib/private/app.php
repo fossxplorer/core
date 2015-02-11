@@ -41,7 +41,6 @@ class OC_App {
 	static private $appInfo = array();
 	static private $appTypes = array();
 	static private $loadedApps = array();
-	static private $checkedApps = array();
 	static private $altLogin = array();
 
 	/**
@@ -320,6 +319,7 @@ class OC_App {
 	/**
 	 * This function set an app as disabled in appconfig.
 	 * @param string $app app
+	 * @throws Exception
 	 */
 	public static function disable($app) {
 		if($app === 'files') {
@@ -696,7 +696,8 @@ class OC_App {
 	}
 
 	/**
-	 * get the forms for either settings, admin or personal
+	 * @param string $type
+	 * @return array
 	 */
 	public static function getForms($type) {
 		$forms = array();
@@ -720,13 +721,6 @@ class OC_App {
 	}
 
 	/**
-	 * register a settings form to be shown
-	 */
-	public static function registerSettings($app, $page) {
-		self::$settingsForms[] = $app . '/' . $page . '.php';
-	}
-
-	/**
 	 * register an admin form to be shown
 	 *
 	 * @param string $app
@@ -743,10 +737,16 @@ class OC_App {
 		self::$personalForms[] = $app . '/' . $page . '.php';
 	}
 
-	public static function registerLogIn($entry) {
+	/**
+	 * @param array $entry
+	 */
+	public static function registerLogIn(array $entry) {
 		self::$altLogin[] = $entry;
 	}
 
+	/**
+	 * @return array
+	 */
 	public static function getAlternativeLogIns() {
 		return self::$altLogin;
 	}
