@@ -391,7 +391,7 @@ class OC_Image {
 				$rotate = 90;
 				break;
 		}
-		if($flip) {
+		if($flip && version_compare(phpversion(), '5.5.0', '>=')) {
 			imageflip($this->resource, IMG_FLIP_HORIZONTAL);
 		}
 		if ($rotate) {
